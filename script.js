@@ -70,6 +70,8 @@ const form = document.getElementById("track-form");
 const input = document.getElementById("tracking-input");
 const result = document.getElementById("result");
 
+let statusTimer = null;
+
 /* Current year in the footer. */
 document.getElementById("footer-year").textContent =
   "© " + new Date().getFullYear() + " Global Express Logistics. Worldwide shipping, simplified.";
@@ -195,66 +197,101 @@ function renderShipment(s) {
     "</div>";
 }
 
+function startShipmentStatusTimer(shipment) {
+  // Stop any previous timer
+  if (statusTimer) {
+    clearInterval(statusTimer);
+  }
+
+  function checkStatus() {
+    const now = new Date();
+
+    const nigeriaDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Africa/Lagos",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(now);
+
+    const nigeriaTime = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Africa/Lagos",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).format(now);
+
+    const arrivalDate = "2026-08-12";
+    const arrivalTime = "15:00:00";
+
+    const hasArrived =
+      nigeriaDate > arrivalDate ||
+      (nigeriaDate === arrivalDate && nigeriaTime >= arrivalTime);
+
+    if (hasArrived) {
+      // Change the status
+      shipment.status = "Arrived at Destination";
+
+      // Check whether we already added the arrival event
+      const alreadyAdded = shipment.history.some(
+        function (step) {
+          return step.event === "Shipment arrived at destination";
+        }
+      );
+
+      // Add arrival event only once
+      if (!alreadyAdded) {
+        shipment.history.push({
+          location: shipment.destination,
+          event: "Shipment arrived at destination",
+          date: "12 August 2026"
+        });
+      }
+
+      // Update the page
+      renderShipment(shipment);
+
+      // Stop checking because the scheduled time has been reached
+      clearInterval(statusTimer);
+      statusTimer = null;
+    }
+  }
+
+  // Check immediately
+  checkStatus();
+
+  // Then check every second
+  statusTimer = setInterval(checkStatus, 1000);
+}
+
 /* ---------------------------------------------------------------------------
  * Events
  * ------------------------------------------------------------------------- */
 form.addEventListener("submit", function (event) {
   event.preventDefault();
-  trackShipment(input.value);
+
+  const trackingNumber = String(input.value || "").trim().toUpperCase();
+
+  // Stop any previous timer
+  if (statusTimer) {
+    clearInterval(statusTimer);
+    statusTimer = null;
+  }
+
+  const shipment = SHIPMENTS[trackingNumber];
+
+  if (shipment) {
+    renderShipment(shipment);
+
+    // Start checking the scheduled arrival time
+    startShipmentStatusTimer(shipment);
+  } else {
+    renderNotFound();
+  }
 });
 
 /* Render the initial placeholder. */
 renderPlaceholder();
 
-let statusTimer;
 
-function updateShipmentStatus() {
-  const shipment = SHIPMENTS["00486LRG/VIP/00233"];
 
-  if (!shipment) return;
-
-  const now = new Date();
-
-  const nigeriaDate = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Africa/Lagos",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(now);
-
-  const nigeriaTime = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Africa/Lagos",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false
-  }).format(now);
-
-  const arrivalDate = "2026-08-12";
-  const arrivalTime = "15:00:00";
-
-  const hasArrived =
-    nigeriaDate > arrivalDate ||
-    (nigeriaDate === arrivalDate && nigeriaTime >= arrivalTime);
-
-  if (hasArrived && shipment.status !== "Arrived at Destination") {
-    shipment.status = "Arrived at Destination";
-
-    shipment.history.push({
-      location: shipment.destination,
-      event: "Shipment arrived at destination",
-      date: "12 August 2026"
-    });
-
-    // Immediately update what the user sees
-    renderShipment(shipment);
-
-    clearInterval(statusTimer);
-  }
-}
-
-// Check immediately
-updateShipmentStatus();
-
-// Keep checking until the scheduled time
-statusTimer = setInterval(updateShipmentStatus, 1000);
