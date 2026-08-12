@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/images/logo.png"/>
+    <title>Global Express Logistics — Track Your Shipment</title>
+    
+    <meta
+      name="description"
+      content="Track your shipment in real time with Global Express Logistics. Enter your tracking number to see origin, destination, current status, and expected delivery date."
+    />
+
+    <!-- Tailwind CSS via CDN (Play CDN). For production you can swap in a compiled build. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Extend the default theme with the logistics palette.
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: "#f7f8fa",
+              foreground: "#1c2538",
+              card: "#ffffff",
+              primary: "#1657a3",
+              "primary-fg": "#f7f9fc",
+              accent: "#e3f0fb",
+              "accent-fg": "#1657a3",
+              muted: "#eef1f6",
+              "muted-fg": "#6b7488",
+              border: "#dde3ec",
+              destructive: "#d64545",
+            },
+            fontFamily: {
+              sans: ["Inter", "system-ui", "Segoe UI", "Roboto", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="min-h-screen bg-background text-foreground font-sans antialiased">
+    <!-- Header -->
+    <header class="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto flex items-center gap-3 px-4 sm:px-6 py-4">
+        <img src="/images/logo.png" alt="Global Express Logistics logo" class="h-11 w-11 shrink-0" />
+        <div class="leading-tight">
+          <p class="text-lg font-bold tracking-tight text-primary">Global Express</p>
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-muted-fg">Logistics</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex flex-col">
+      <!-- Hero / Tracking -->
+      <section class="bg-gradient-to-b from-primary to-[#0e3d72] text-primary-fg">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Track Your Shipment</h1>
+          <p class="mt-3 max-w-xl mx-auto text-sm sm:text-base text-primary-fg/80">
+            Enter your Global Express Logistics tracking number below to see the latest status,
+            route, and expected delivery date.
+          </p>
+
+          <form id="track-form" class="mt-8 max-w-lg mx-auto flex flex-col sm:flex-row gap-3">
+            <input
+              id="tracking-input"
+              type="text"
+              placeholder="e.g. 00409LRG/VIP/88475"
+              aria-label="Tracking number"
+              autocomplete="off"
+              class="w-full flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-white/60 outline-none focus:ring-2 focus:ring-white/30"
+            />
+            <button
+              type="submit"
+              class="shrink-0 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-primary shadow-sm hover:bg-white/90 active:scale-[0.98] transition"
+            >
+              Track Shipment
+            </button>
+          </form>
+          <p class="mt-3 text-xs text-primary-fg/60">
+            Try: 009382LRG/VIP/49575 · 00785LRG/VIP/45774 · 00200LRG/VIP/96996
+          </p>
+        </div>
+      </section>
+
+      <!-- Result -->
+      <section class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-10 flex-1">
+        <div id="result"></div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border bg-card">
+      <div
+        class="max-w-6xl mx-auto px-4 py-6 flex flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left"
+      >
+        <div class="flex items-center gap-2">
+          <img src="/images/logo.png" alt="Global Express Logistics logo" class="h-6 w-6" />
+          <span class="text-sm font-semibold text-foreground">Global Express Logistics</span>
+        </div>
+        <p class="text-xs text-muted-fg" id="footer-year">
+          © Global Express Logistics. Worldwide shipping, simplified.
+        </p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

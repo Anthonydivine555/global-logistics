@@ -1,0 +1,26 @@
+/* Global Express Logistics — custom styles on top of Tailwind. */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Slight fade-in for the result panel. */
+#result {
+  animation: fade-in 0.25s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Timeline dot connector (kept tidy at small heights). */
+.timeline-step:last-child .timeline-line {
+  display: none;
+}
