@@ -60,7 +60,7 @@ const SHIPMENTS = {
 const STATUS_BADGE_CLASSES = {
   "In Transit": "bg-accent text-accent-fg border-accent-fg/20",
   "Out for Delivery": "bg-primary/10 text-primary border-primary/20",
-  Delivered: "bg-emerald-100 text-emerald-700 border-emerald-300",
+  "Arrived at Destination": "bg-emerald-100 text-emerald-700 border-emerald-300",
 };
 
 /* ---------------------------------------------------------------------------
@@ -205,3 +205,56 @@ form.addEventListener("submit", function (event) {
 
 /* Render the initial placeholder. */
 renderPlaceholder();
+
+let statusTimer;
+
+function updateShipmentStatus() {
+  const shipment = SHIPMENTS["00486LRG/VIP/00233"];
+
+  if (!shipment) return;
+
+  const now = new Date();
+
+  const nigeriaDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Africa/Lagos",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(now);
+
+  const nigeriaTime = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Lagos",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).format(now);
+
+  const arrivalDate = "2026-08-12";
+  const arrivalTime = "15:00:00";
+
+  const hasArrived =
+    nigeriaDate > arrivalDate ||
+    (nigeriaDate === arrivalDate && nigeriaTime >= arrivalTime);
+
+  if (hasArrived && shipment.status !== "Arrived at Destination") {
+    shipment.status = "Arrived at Destination";
+
+    shipment.history.push({
+      location: shipment.destination,
+      event: "Shipment arrived at destination",
+      date: "12 August 2026"
+    });
+
+    // Immediately update what the user sees
+    renderShipment(shipment);
+
+    clearInterval(statusTimer);
+  }
+}
+
+// Check immediately
+updateShipmentStatus();
+
+// Keep checking until the scheduled time
+statusTimer = setInterval(updateShipmentStatus, 1000);
